@@ -35,7 +35,7 @@ on:
 
 jobs:
   terraform:
-    name: Create or Destroy Lab
+    name: ${{github.event.inputs.cloud}} - ${{ github.event.inputs.student_username }} - ${{ github.event.inputs.action }}
     runs-on: ubuntu-latest
 
     steps:
@@ -76,17 +76,21 @@ jobs:
         if: github.event.inputs.action == 'destroy'
         run: terraform destroy -auto-approve -var='student_username=${{ github.event.inputs.student_username }}'
 
-      - name: Create output file
-        working-directory: ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}
-        run: echo "{" > ${{ github.event.inputs.student_username }}json
-
       - name: Get Terraform Outputs
         working-directory: ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}
         run: |
-          echo '"STUDENT_USERNAME": "$(terraform output -raw student_username)",' >> ${{ github.event.inputs.student_username }}json
-          echo '"STUDENT_PASSWORD": "$(terraform output -raw student_password)",' >> ${{ github.event.inputs.student_username }}json
-          echo '"AWS_CONSOLE_URL": "$(terraform output -raw aws_console_url)"' >> ${{ github.event.inputs.student_username }}json
-          echo "}" >> ${{ github.event.inputs.student_username }}json
+          output_file="${{ github.event.inputs.student_username }}.json"
+      
+          # Generate JSON output file
+          echo "{" > "$output_file"
+          echo "  \"STUDENT_USERNAME\": \"$(terraform output -raw student_username | tr -d '\n' | sed 's/"/\\"/g')\"," >> "$output_file"
+          echo "  \"STUDENT_PASSWORD\": \"$(terraform output -raw student_password | tr -d '\n' | sed 's/"/\\"/g' | sed 's/:/\\:/g')\"," >> "$output_file"
+          echo "  \"AWS_CONSOLE_URL\": \"$(terraform output -raw aws_console_url | tr -d '\n' | sed 's/"/\\"/g')\"" >> "$output_file"
+          echo "}" >> "$output_file"
+      
+          # Display the output file for debugging
+          cat "$output_file"
+      
 
       - name: Show Outputs
         run: cat ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}/${{ github.event.inputs.student_username }}json
