@@ -1,5 +1,8 @@
 name: Lab Manager
 
+env:
+  TERRAFORM_VERSION: 1.11.0
+
 on:
   workflow_dispatch: # Allows manual trigger via API
     inputs:
@@ -32,7 +35,7 @@ on:
 
 jobs:
   terraform:
-    name: Terraform Init and Apply/Destroy
+    name: Create or Destroy Lab
     runs-on: ubuntu-latest
 
     steps:
@@ -52,7 +55,8 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.11.0
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
 
       - name: Terraform Init
         working-directory: ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}
@@ -86,6 +90,7 @@ jobs:
           echo "STUDENT_USERNAME=$(terraform output -raw student_username | tr -d '\n' | sed 's/^"//;s/"$//')" >> ${{ github.event.inputs.student_username }}.txt
           echo "STUDENT_PASSWORD=$(terraform output -raw student_password | tr -d '\n' | sed 's/^"//;s/"$//' | sed 's/"/\\"/g' | sed 's/:/\\:/g')" >> ${{ github.event.inputs.student_username }}.txt
           echo "AWS_CONSOLE_URL=$(terraform output -raw aws_console_url | tr -d '\n' | sed 's/^"//;s/"$//')" >> ${{ github.event.inputs.student_username }}.txt
+
           terraform output -raw student_password
           terraform output student_password
 
