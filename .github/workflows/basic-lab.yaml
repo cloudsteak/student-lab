@@ -19,7 +19,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup wordking directory
+      - name: Setup working directory
         run: |
           cd $GITHUB_WORKSPACE/aws/labs/basic
           pwd
@@ -51,11 +51,11 @@ jobs:
 
       - name: Terraform Apply
         if: github.event.inputs.action == 'apply'
-        run: terraform apply -auto-approve -var="student_username=${{ github.event.inputs.student_username }}"
+        run: terraform apply -auto-approve -var='student_username=${{ github.event.inputs.student_username }}'
 
       - name: Terraform Destroy
         if: github.event.inputs.action == 'destroy'
-        run: terraform destroy -auto-approve -var="student_username=${{ github.event.inputs.student_username }}"
+        run: terraform destroy -auto-approve -var='student_username=${{ github.event.inputs.student_username }}'
 
       - name: Get Terraform Outputs
         run: |
