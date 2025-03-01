@@ -3,6 +3,14 @@ name: Basic Lab - Terraform Workflow
 on:
   workflow_dispatch: # Allows manual trigger via API
     inputs:
+      cloud:
+        description: "Cloud provider (aws/azure)"
+        required: true
+        default: "aws"
+      lab:
+        description: "Lab name"
+        required: true
+        default: "basic"
       action:
         description: "Terraform action (apply/destroy)"
         required: true
@@ -13,17 +21,12 @@ on:
 
 jobs:
   terraform:
+    name: Terraform Init and Apply/Destroy
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Setup working directory
-        run: |
-          cd $GITHUB_WORKSPACE/aws/labs/basic
-          pwd
-          ls -la
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -41,6 +44,7 @@ jobs:
           terraform_version: 1.11.0
 
       - name: Terraform Init
+        working-directory: ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}
         run: |
          pwd
          ls -la
@@ -48,6 +52,7 @@ jobs:
          terraform init -reconfigure -backend-config=bucket=${{ vars.TF_STATE_BUCKET }} -backend-config=key=labs/${{ github.event.inputs.student_username }}/terraform.tfstate -backend-config=region=${{ vars.AWS_REGION }} -backend-config=encrypt=true -backend-config=use_lockfile=true
 
       - name: Terraform Apply
+        working-directory: ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}
         if: github.event.inputs.action == 'apply'
         run: terraform apply -auto-approve -var='student_username=${{ github.event.inputs.student_username }}'
 
@@ -56,6 +61,7 @@ jobs:
         run: terraform destroy -auto-approve -var='student_username=${{ github.event.inputs.student_username }}'
 
       - name: Get Terraform Outputs
+        working-directory: ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}
         run: |
           echo "STUDENT_USERNAME=$(terraform output -raw student_username)" >> $GITHUB_ENV
           echo "STUDENT_PASSWORD=$(terraform output -raw student_password)" >> $GITHUB_ENV
