@@ -86,6 +86,8 @@ jobs:
           echo "STUDENT_USERNAME=$(terraform output -raw student_username | tr -d '\n' | sed 's/^"//;s/"$//')" >> ${{ github.event.inputs.student_username }}.txt
           echo "STUDENT_PASSWORD=$(terraform output -raw student_password | tr -d '\n' | sed 's/^"//;s/"$//' | sed 's/"/\\"/g' | sed 's/:/\\:/g')" >> ${{ github.event.inputs.student_username }}.txt
           echo "AWS_CONSOLE_URL=$(terraform output -raw aws_console_url | tr -d '\n' | sed 's/^"//;s/"$//')" >> ${{ github.event.inputs.student_username }}.txt
+          terraform output -raw student_password
+          terraform output student_password
 
       - name: Show Outputs
         run: cat ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}/${{ github.event.inputs.student_username }}.txt
