@@ -78,28 +78,22 @@ jobs:
 
       - name: Create output file
         working-directory: ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}
-        run: echo "Output data" > ${{ github.event.inputs.student_username }}.txt
+        run: echo "{" > ${{ github.event.inputs.student_username }}json
 
       - name: Get Terraform Outputs
         working-directory: ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}
         run: |
-          echo "'$(terraform output -raw student_username | tr -d '\n')" >> ${{ github.event.inputs.student_username }}.txt
-          echo "'$(terraform output -raw student_password | tr -d '\n' | sed 's/"/\\"/g' | sed 's/:/\\:/g')" >> ${{ github.event.inputs.student_username }}.txt
-          echo "'$(terraform output -raw aws_console_url | tr -d '\n')'" >> ${{ github.event.inputs.student_username }}.txt
-
-          echo "STUDENT_USERNAME=$(terraform output -raw student_username | tr -d '\n' | sed 's/^"//;s/"$//')" >> ${{ github.event.inputs.student_username }}.txt
-          echo "STUDENT_PASSWORD=$(terraform output -raw student_password | tr -d '\n' | sed 's/^"//;s/"$//' | sed 's/"/\\"/g' | sed 's/:/\\:/g')" >> ${{ github.event.inputs.student_username }}.txt
-          echo "AWS_CONSOLE_URL=$(terraform output -raw aws_console_url | tr -d '\n' | sed 's/^"//;s/"$//')" >> ${{ github.event.inputs.student_username }}.txt
-
-          terraform output -raw student_password
-          terraform output student_password
+          echo '"STUDENT_USERNAME": "$(terraform output -raw student_username)",' >> ${{ github.event.inputs.student_username }}json
+          echo "STUDENT_PASSWORD": "$(terraform output -raw student_password)",' >> ${{ github.event.inputs.student_username }}json
+          echo "AWS_CONSOLE_URL": "$(terraform output -raw aws_console_url)"' >> ${{ github.event.inputs.student_username }}json
+          echo "}" >> ${{ github.event.inputs.student_username }}json
 
       - name: Show Outputs
-        run: cat ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}/${{ github.event.inputs.student_username }}.txt
+        run: cat ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}/${{ github.event.inputs.student_username }}json
 
       - name: Save Outputs
         uses: actions/upload-artifact@v4
         with:
           name: terraform-outputs
           path: |
-            ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}/${{ github.event.inputs.student_username }}.txt
+            ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}/${{ github.event.inputs.student_username }}json
