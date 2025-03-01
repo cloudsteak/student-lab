@@ -57,19 +57,24 @@ jobs:
         run: terraform apply -auto-approve -var='student_username=${{ github.event.inputs.student_username }}'
 
       - name: Terraform Destroy
+        working-directory: ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}
         if: github.event.inputs.action == 'destroy'
         run: terraform destroy -auto-approve -var='student_username=${{ github.event.inputs.student_username }}'
+
+      - name: Create output file
+        working-directory: ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}
+        run: echo "Output data" > ${{ github.event.inputs.student_username }}.txt
 
       - name: Get Terraform Outputs
         working-directory: ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}
         run: |
-          echo "STUDENT_USERNAME=$(terraform output -raw student_username | tr -d '\n')" >> $GITHUB_ENV
-          echo "STUDENT_PASSWORD=$(terraform output -raw student_password | tr -d '\n' | sed 's/"/\\"/g' | sed 's/:/\\:/g')" >> $GITHUB_ENV
-           echo "AWS_CONSOLE_URL='$(terraform output -raw aws_console_url | tr -d '\n')'" >> $GITHUB_ENV
-
+          echo "STUDENT_USERNAME=$(terraform output -raw student_username | tr -d '\n')" >> ${{ github.event.inputs.student_username }}.txt
+          echo "STUDENT_PASSWORD=$(terraform output -raw student_password | tr -d '\n' | sed 's/"/\\"/g' | sed 's/:/\\:/g')" >> ${{ github.event.inputs.student_username }}.txt
+           echo "AWS_CONSOLE_URL='$(terraform output -raw aws_console_url | tr -d '\n')'" >> ${{ github.event.inputs.student_username }}.txt
+     
       - name: Save Outputs
         uses: actions/upload-artifact@v4
         with:
           name: terraform-outputs
           path: |
-            $GITHUB_ENV
+            ${{ github.event.inputs.student_username }}.txt
