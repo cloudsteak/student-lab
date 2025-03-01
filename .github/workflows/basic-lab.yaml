@@ -64,7 +64,7 @@ jobs:
           echo "AWS_CONSOLE_URL=$(terraform output -raw aws_console_url)" >> $GITHUB_ENV
 
       - name: Save Outputs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: terraform-outputs
           path: |
