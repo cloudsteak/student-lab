@@ -46,10 +46,10 @@ jobs:
       - name: Terraform Init
         working-directory: ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}
         run: |
-         pwd
-         ls -la
-         terraform --version
-         terraform init -reconfigure -backend-config=bucket=${{ vars.TF_STATE_BUCKET }} -backend-config=key=labs/${{ github.event.inputs.student_username }}/terraform.tfstate -backend-config=region=${{ vars.AWS_REGION }} -backend-config=encrypt=true -backend-config=use_lockfile=true
+          pwd
+          ls -la
+          terraform --version
+          terraform init -reconfigure -backend-config=bucket=${{ vars.TF_STATE_BUCKET }} -backend-config=key=labs/${{ github.event.inputs.student_username }}/terraform.tfstate -backend-config=region=${{ vars.AWS_REGION }} -backend-config=encrypt=true -backend-config=use_lockfile=true
 
       - name: Terraform Apply
         working-directory: ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}
@@ -70,11 +70,14 @@ jobs:
         run: |
           echo "STUDENT_USERNAME=$(terraform output -raw student_username | tr -d '\n')" >> ${{ github.event.inputs.student_username }}.txt
           echo "STUDENT_PASSWORD=$(terraform output -raw student_password | tr -d '\n' | sed 's/"/\\"/g' | sed 's/:/\\:/g')" >> ${{ github.event.inputs.student_username }}.txt
-           echo "AWS_CONSOLE_URL='$(terraform output -raw aws_console_url | tr -d '\n')'" >> ${{ github.event.inputs.student_username }}.txt
-     
+          echo "AWS_CONSOLE_URL='$(terraform output -raw aws_console_url | tr -d '\n')'" >> ${{ github.event.inputs.student_username }}.txt
+
+      - name: Show Outputs
+        run: cat ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}/${{ github.event.inputs.student_username }}.txt
+
       - name: Save Outputs
         uses: actions/upload-artifact@v4
         with:
           name: terraform-outputs
           path: |
-            ${{ github.event.inputs.student_username }}.txt
+            ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}/${{ github.event.inputs.student_username }}.txt
