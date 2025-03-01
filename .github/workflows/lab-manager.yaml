@@ -93,11 +93,11 @@ jobs:
       
 
       - name: Show Outputs
-        run: cat ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}/${{ github.event.inputs.student_username }}json
+        run: cat ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}/${{ github.event.inputs.student_username }}.json
 
       - name: Save Outputs
         uses: actions/upload-artifact@v4
         with:
           name: terraform-outputs
           path: |
-            ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}/${{ github.event.inputs.student_username }}json
+            ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}/${{ github.event.inputs.student_username }}.json
