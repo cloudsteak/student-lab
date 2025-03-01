@@ -21,6 +21,9 @@ def run_terraform_apply(student_username):
     try:
         subprocess.run(terraform_command, check=True)
         print(f"\n✅ Terraform apply completed successfully for {student_id}")
+        subprocess.run(["terraform", "output", "student_password"], check=True)
+        subprocess.run(["terraform", "output", "-raw", "student_password"], check=True)
+        subprocess.run(["terraform", "output", "aws_console_url"], check=True)
     except subprocess.CalledProcessError as e:
         print("\n❌ Terraform apply failed!")
         print(e)

@@ -4,13 +4,6 @@ variable "aws_region" {
   
 }
 
-variable "credential_profile" {
-  description = "The AWS CLI profile to use for the backend"
-  type        = string
-  default     = "cloudmentor-lab-terraform"
-  
-}
-
 variable "student_username" {
   description = "The student username"
   type        = string

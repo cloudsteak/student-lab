@@ -1,0 +1,71 @@
+name: Basic Lab - Terraform Workflow
+
+on:
+  workflow_dispatch: # Allows manual trigger via API
+    inputs:
+      action:
+        description: "Terraform action (apply/destroy)"
+        required: true
+        default: "apply"
+      student_username:
+        description: "Unique student username"
+        required: true
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup wordking directory
+        run: |
+          cd $GITHUB_WORKSPACE/aws/labs/basic
+          pwd
+          ls -la
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Verify AWS CLI
+        run: aws s3 ls # Example: List S3 buckets to confirm AWS access
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.11.0
+
+      - name: Terraform Init
+        run: |
+          terraform init -reconfigure \
+              -backend-config=bucket=${{ vars.TF_STATE_BUCKET }} \
+              -backend-config=key=labs/${{ github.event.inputs.student_username }}/terraform.tfstate \
+              -backend-config=region=${{ vars.AWS_REGION }} \
+              -backend-config=encrypt=true \
+              -backend-config=use_lockfile=true
+
+      - name: Terraform Apply
+        if: github.event.inputs.action == 'apply'
+        run: terraform apply -auto-approve -var="student_username=${{ github.event.inputs.student_username }}"
+
+      - name: Terraform Destroy
+        if: github.event.inputs.action == 'destroy'
+        run: terraform destroy -auto-approve -var="student_username=${{ github.event.inputs.student_username }}"
+
+      - name: Get Terraform Outputs
+        run: |
+          echo "STUDENT_USERNAME=$(terraform output -raw student_username)" >> $GITHUB_ENV
+          echo "STUDENT_PASSWORD=$(terraform output -raw student_password)" >> $GITHUB_ENV
+          echo "AWS_CONSOLE_URL=$(terraform output -raw aws_console_url)" >> $GITHUB_ENV
+
+      - name: Save Outputs
+        uses: actions/upload-artifact@v3
+        with:
+          name: terraform-outputs
+          path: |
+            $GITHUB_ENV

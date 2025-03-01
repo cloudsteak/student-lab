@@ -1,6 +1,7 @@
 resource "aws_s3_bucket" "student_bucket" {
   bucket = "${var.student_username}-lab-cloudmentor"
   tags          = var.tags
+  force_destroy = true
 }
 
 # resource "aws_s3_bucket_public_access_block" "student_bucket_block" {
@@ -64,6 +65,14 @@ resource "aws_iam_policy" "student_restrict_s3_access" {
           }
         }
       },
+
+      # ✅ Allow listmybucket
+      {
+        Effect   = "Allow",
+        Action   = ["s3:ListAllMyBuckets"],
+        Resource = "*"
+      },
+      
 
       # ✅ Allow access to objects inside the bucket
       {
