@@ -64,7 +64,7 @@ jobs:
         working-directory: ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}
         run: |
           echo "STUDENT_USERNAME=$(terraform output -raw student_username | tr -d '\n')" >> $GITHUB_ENV
-          echo "STUDENT_PASSWORD=$(terraform output -raw student_password)" >> $GITHUB_ENV
+          echo "STUDENT_PASSWORD=$(terraform output -raw student_password | tr -d '\n' | sed 's/"/\\"/g' | sed 's/:/\\:/g')" >> $GITHUB_ENV
           echo "AWS_CONSOLE_URL=$(terraform output -raw aws_console_url)" >> $GITHUB_ENV
 
       - name: Save Outputs
