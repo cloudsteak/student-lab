@@ -4,15 +4,26 @@ on:
   workflow_dispatch: # Allows manual trigger via API
     inputs:
       cloud:
-        description: "Cloud provider (aws/azure)"
+        description: "Cloud provider"
+        type: choice
+        options:
+          - "aws"
+          - "azure"
         required: true
         default: "aws"
       lab:
         description: "Lab name"
+        type: choice
+        options:
+          - "basic"
         required: true
         default: "basic"
       action:
-        description: "Terraform action (apply/destroy)"
+        description: "Terraform action"
+        type: choice
+        options:
+          - "apply"
+          - "destroy"
         required: true
         default: "apply"
       student_username:
@@ -68,14 +79,13 @@ jobs:
       - name: Get Terraform Outputs
         working-directory: ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}
         run: |
-          echo "STUDENT_USERNAME=$(terraform output -raw student_username | tr -d '\n')" >> ${{ github.event.inputs.student_username }}.txt
-          echo "STUDENT_PASSWORD=$(terraform output -raw student_password | tr -d '\n' | sed 's/"/\\"/g' | sed 's/:/\\:/g')" >> ${{ github.event.inputs.student_username }}.txt
-          echo "AWS_CONSOLE_URL='$(terraform output -raw aws_console_url | tr -d '\n')'" >> ${{ github.event.inputs.student_username }}.txt
+          echo "'$(terraform output -raw student_username | tr -d '\n')" >> ${{ github.event.inputs.student_username }}.txt
+          echo "'$(terraform output -raw student_password | tr -d '\n' | sed 's/"/\\"/g' | sed 's/:/\\:/g')" >> ${{ github.event.inputs.student_username }}.txt
+          echo "'$(terraform output -raw aws_console_url | tr -d '\n')'" >> ${{ github.event.inputs.student_username }}.txt
 
-          printf "STUDENT_USERNAME=%s\n" "$(terraform output -raw student_username | tr -d '\n')" >> ${{ github.event.inputs.student_username }}.txt
-          printf "STUDENT_PASSWORD=%s\n" "$(terraform output -raw student_password | tr -d '\n' | sed 's/"/\\"/g' | sed 's/:/\\:/g')" >> ${{ github.event.inputs.student_username }}.txt
-          printf "AWS_CONSOLE_URL='%s'\n" "$(terraform output -raw aws_console_url | tr -d '\n')" >> ${{ github.event.inputs.student_username }}.txt
-
+          printf "STUDENT_USERNAME=%s\n" "$(terraform output student_username | tr -d '\n')" >> ${{ github.event.inputs.student_username }}.txt
+          printf "STUDENT_PASSWORD=%s\n" "$(terraform output student_password | tr -d '\n' | sed 's/"/\\"/g' | sed 's/:/\\:/g')" >> ${{ github.event.inputs.student_username }}.txt
+          printf "AWS_CONSOLE_URL='%s'\n" "$(terraform output aws_console_url | tr -d '\n')" >> ${{ github.event.inputs.student_username }}.txt
 
       - name: Show Outputs
         run: cat ${{ github.workspace }}/${{ github.event.inputs.cloud }}/labs/${{ github.event.inputs.lab }}/${{ github.event.inputs.student_username }}.txt
