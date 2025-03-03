@@ -75,7 +75,10 @@ jobs:
       - name: Terraform Destroy
         working-directory: ${{ github.workspace }}/aws/labs/${{ github.event.inputs.lab }}
         if: github.event.inputs.action == 'destroy'
-        run: terraform destroy -auto-approve -var='student_username=${{ github.event.inputs.student_username }}' -var='student_password=${{ github.event.inputs.student_password }}'
+        run: |
+          aws iam delete-login-profile --user-name ${{ github.event.inputs.student_username }}
+          sleep 2
+          terraform destroy -auto-approve -var='student_username=${{ github.event.inputs.student_username }}' -var='student_password=${{ github.event.inputs.student_password }}'
 
       - name: Get Terraform Outputs
         working-directory: ${{ github.workspace }}/aws/labs/${{ github.event.inputs.lab }}
