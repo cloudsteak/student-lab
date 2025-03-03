@@ -39,11 +39,11 @@ resource "null_resource" "set_iam_password" {
     aws iam create-login-profile \
       --user-name ${aws_iam_user.student.name} \
       --password "${var.student_password}" \
-      --password-reset-required false || \
+      --no-password-reset-required || \
     aws iam update-login-profile \
       --user-name ${aws_iam_user.student.name} \
       --password "${var.student_password}" \
-      --password-reset-required false
+      --no-password-reset-required
     EOT
   }
 }
