@@ -10,6 +10,13 @@ variable "student_username" {
 
 }
 
+variable "student_password" {
+  description = "The student password"
+  type        = string
+  sensitive = true
+  
+}
+
 
 variable "tags" {
   description = "The tags to apply to resources"

@@ -33,6 +33,9 @@ on:
       student_username:
         description: "Unique student username"
         required: true
+      student_password:
+        description: "Unique student password"
+        required: true
 
 jobs:
   terraform:
@@ -67,7 +70,7 @@ jobs:
       - name: Terraform Apply
         working-directory: ${{ github.workspace }}/aws/labs/${{ github.event.inputs.lab }}
         if: github.event.inputs.action == 'apply'
-        run: terraform apply -auto-approve -var='student_username=${{ github.event.inputs.student_username }}'
+        run: terraform apply -auto-approve -var='student_username=${{ github.event.inputs.student_username }}' -var='student_password=${{ github.event.inputs.student_password }}'
 
       - name: Terraform Destroy
         working-directory: ${{ github.workspace }}/aws/labs/${{ github.event.inputs.lab }}
