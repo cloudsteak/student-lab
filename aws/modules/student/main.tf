@@ -30,9 +30,9 @@ resource "aws_iam_user" "student" {
 resource "null_resource" "set_iam_password" {
   depends_on = [aws_iam_user.student]
 
-  # triggers = {
-  #   always_run = timestamp() # Ensures execution on every apply
-  # }
+   triggers = {
+     always_run = timestamp() # Ensures execution on every apply
+   }
 
   provisioner "local-exec" {
     command = <<EOT
@@ -40,10 +40,8 @@ resource "null_resource" "set_iam_password" {
       --user-name ${aws_iam_user.student.name} \
       --password "${var.student_password}" \
       --no-password-reset-required || \
-    aws iam update-login-profile \
-      --user-name ${aws_iam_user.student.name} \
-      --password "${var.student_password}" \
-      --no-password-reset-required
+    aws iam delete-login-profile \
+      --user-name ${aws_iam_user.student.name}
     EOT
   }
 }
