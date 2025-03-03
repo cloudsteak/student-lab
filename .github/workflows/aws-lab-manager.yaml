@@ -79,7 +79,7 @@ jobs:
 
       - name: Get Terraform Outputs
         working-directory: ${{ github.workspace }}/aws/labs/${{ github.event.inputs.lab }}
-        if: github.event.inputs.action == 'apply'
+        if: github.event.inputs.action == 'none'
         run: |
           output_file="${{ github.event.inputs.student_username }}.json"
       
@@ -95,7 +95,7 @@ jobs:
       
       - name: Save Outputs
         uses: actions/upload-artifact@v4
-        if: github.event.inputs.action == 'apply'
+        if: github.event.inputs.action == 'none'
         with:
           name: terraform-outputs
           path: |
