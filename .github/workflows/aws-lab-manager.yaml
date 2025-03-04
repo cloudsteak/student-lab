@@ -33,7 +33,7 @@ on:
       student_username:
         description: "Unique student username"
         required: true
-      student_password:
+      password_key:
         description: "Unique student password"
         required: true
 
@@ -71,11 +71,11 @@ jobs:
         working-directory: ${{ github.workspace }}/aws/labs/${{ github.event.inputs.lab }}
         if: github.event.inputs.action == 'apply'
         run: |
-          terraform apply -auto-approve -var='student_username=${{ github.event.inputs.student_username }}' -var='student_password=${{ github.event.inputs.student_password }}'
+          terraform apply -auto-approve -var='student_username=${{ github.event.inputs.student_username }}'
           sleep 2
           aws iam update-login-profile \
             --user-name ${{ github.event.inputs.student_username }} \
-            --password ${{ github.event.inputs.student_password }} \
+            --password "${{ secrets.STUDENT_PASSWORD_PREFIX }}-${{ github.event.inputs.password_key }}" \
             --no-password-reset-required
 
       - name: Terraform Destroy
@@ -84,7 +84,7 @@ jobs:
         run: |
           aws iam delete-login-profile --user-name ${{ github.event.inputs.student_username }}
           sleep 2
-          terraform destroy -auto-approve -var='student_username=${{ github.event.inputs.student_username }}' -var='student_password=${{ github.event.inputs.student_password }}'
+          terraform destroy -auto-approve -var='student_username=${{ github.event.inputs.student_username }}'
 
       - name: Get Terraform Outputs
         working-directory: ${{ github.workspace }}/aws/labs/${{ github.event.inputs.lab }}
