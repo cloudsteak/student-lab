@@ -78,7 +78,7 @@ jobs:
           # Update IAM user password
           aws iam update-login-profile \
             --user-name ${{ github.event.inputs.student_username }} \
-            --password "${{ secrets.STUDENT_PASSWORD_PREFIX }}-${{ github.event.inputs.password_key }}" \
+            --password "${{ secrets.STUDENT_PASSWORD_PREFIX }}-${{ github.event.inputs.password_key }}-${{ secrets.STUDENT_PASSWORD_SUFFIX }}" \
             --no-password-reset-required
 
       - name: Terraform Destroy
