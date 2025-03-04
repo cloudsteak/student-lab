@@ -19,31 +19,12 @@ resource "aws_iam_user" "student" {
 }
 
 
-# resource "aws_iam_user_login_profile" "student_password" {
-#   user                    = aws_iam_user.student.name
-#   password_length         = 18
-#   password_reset_required = false
+resource "aws_iam_user_login_profile" "student_password" {
+  user                    = aws_iam_user.student.name
+  password_length         = 18
+  password_reset_required = false
 
-# }
-
-
-resource "null_resource" "set_iam_password" {
-  depends_on = [aws_iam_user.student]
-
-  #  triggers = {
-  #    always_run = timestamp() # Ensures execution on every apply
-  #  }
-
-  provisioner "local-exec" {
-    command = <<EOT
-    aws iam create-login-profile \
-      --user-name ${aws_iam_user.student.name} \
-      --password "${var.student_password}" \
-      --no-password-reset-required
-    EOT
-  }
 }
-
 
 resource "aws_iam_access_key" "student" {
   user = aws_iam_user.student.name
