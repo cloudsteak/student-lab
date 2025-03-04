@@ -71,8 +71,11 @@ jobs:
         working-directory: ${{ github.workspace }}/aws/labs/${{ github.event.inputs.lab }}
         if: github.event.inputs.action == 'apply'
         run: |
+          # Apply Terraform configuration
           terraform apply -auto-approve -var='student_username=${{ github.event.inputs.student_username }}'
-          sleep 2
+          # Wait for IAM user to be created
+          sleep 15
+          # Update IAM user password
           aws iam update-login-profile \
             --user-name ${{ github.event.inputs.student_username }} \
             --password "${{ secrets.STUDENT_PASSWORD_PREFIX }}-${{ github.event.inputs.password_key }}" \
