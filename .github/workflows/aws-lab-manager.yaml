@@ -33,7 +33,7 @@ on:
       student_username:
         description: "Unique student username"
         required: true
-      password_key:
+      password:
         description: "Unique student password"
         required: true
 
@@ -78,7 +78,7 @@ jobs:
           # Update IAM user password
           aws iam update-login-profile \
             --user-name ${{ github.event.inputs.student_username }} \
-            --password "${{ secrets.STUDENT_PASSWORD_PREFIX }}-${{ github.event.inputs.password_key }}-${{ secrets.STUDENT_PASSWORD_SUFFIX }}" \
+            --password "${{ github.event.inputs.password }}" \
             --no-password-reset-required
 
       - name: Terraform Destroy
