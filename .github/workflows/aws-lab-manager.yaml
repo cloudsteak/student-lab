@@ -86,27 +86,7 @@ jobs:
         if: github.event.inputs.action == 'destroy'
         run: |
           terraform destroy -auto-approve -var='student_username=${{ github.event.inputs.student_username }}'
-
-      - name: Get Terraform Outputs
-        working-directory: ${{ github.workspace }}/aws/labs/${{ github.event.inputs.lab }}
-        if: github.event.inputs.action == 'none'
-        run: |
-          output_file="${{ github.event.inputs.student_username }}.json"
-      
-          # Generate JSON output file
-          echo "{" > "$output_file"
-          echo "  \"STUDENT_USERNAME\": \"$(terraform output -raw student_username | tr -d '\n' | sed 's/"/\\"/g')\"," >> "$output_file"
-          echo "  \"STUDENT_PASSWORD\": \"$(terraform output -raw student_password | tr -d '\n' | sed 's/"/\\"/g' | sed 's/:/\\:/g')\"," >> "$output_file"
-          echo "  \"AWS_CONSOLE_URL\": \"$(terraform output -raw aws_console_url | tr -d '\n' | sed 's/"/\\"/g')\"" >> "$output_file"
-          echo "}" >> "$output_file"
-      
-          # Display the output file for debugging
-          cat "$output_file"
-      
-      - name: Save Outputs
-        uses: actions/upload-artifact@v4
-        if: github.event.inputs.action == 'none'
+      - name: Notify backend
+        uses: ./.github/workflows/lab-ready-callback.yml
         with:
-          name: terraform-outputs
-          path: |
-            ${{ github.workspace }}/aws/labs/${{ github.event.inputs.lab }}/${{ github.event.inputs.student_username }}.json
+          student_username: ${{ github.event.inputs.student_username }}
