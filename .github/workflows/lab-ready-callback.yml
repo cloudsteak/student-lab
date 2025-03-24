@@ -6,6 +6,10 @@ on:
       student_username:
         required: true
         type: string
+      status:
+        required: false
+        type: string
+        default: "ready"
 
 jobs:
   notify-backend:
@@ -25,9 +29,12 @@ jobs:
             }' | jq -r .access_token)
           echo "token=$TOKEN" >> $GITHUB_OUTPUT
 
-      - name: Notify backend when lab is ready
+      - name: Notify backend when lab is ${{ inputs.status }}
         run: |
           curl -X POST https://lab-backend.cloudmentor.hu/lab-ready \
             -H "Authorization: Bearer ${{ steps.auth.outputs.token }}" \
             -H "Content-Type: application/json" \
-            -d '{"username": "${{ inputs.student_username }}"}'
+            -d '{
+              "username": "${{ inputs.student_username }}",
+              "status": "${{ inputs.status }}"
+            }'
