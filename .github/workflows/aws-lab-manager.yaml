@@ -57,19 +57,23 @@ jobs:
         run: aws s3 ls # Example: List S3 buckets to confirm AWS access
 
       - name: Set up Terraform
+        id: setup
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
           terraform_wrapper: false
 
       - name: Terraform Init
+        id: init
         working-directory: ${{ github.workspace }}/aws/labs/${{ github.event.inputs.lab }}
         run: |
           terraform init -reconfigure -backend-config=bucket=${{ vars.TF_STATE_BUCKET }} -backend-config=key=labs/${{ github.event.inputs.student_username }}/terraform.tfstate -backend-config=region=${{ vars.AWS_REGION }} -backend-config=encrypt=true -backend-config=use_lockfile=true
 
       - name: Terraform Apply
+        id: apply
         working-directory: ${{ github.workspace }}/aws/labs/${{ github.event.inputs.lab }}
         if: github.event.inputs.action == 'apply'
+        continue-on-error: true
         run: |
           # Apply Terraform configuration
           terraform apply -auto-approve -var='student_username=${{ github.event.inputs.student_username }}'
@@ -80,13 +84,24 @@ jobs:
             --user-name ${{ github.event.inputs.student_username }} \
             --password "${{ github.event.inputs.student_password }}" \
             --no-password-reset-required
-
+      - name: Set lab status output
+        id: status
+        run: |
+          if [ "${{ steps.apply.outcome }}" == "success" ]; then
+            echo "status=ready" >> $GITHUB_OUTPUT
+          else
+            echo "status=failed" >> $GITHUB_OUTPUT
+          fi
       - name: Terraform Destroy
+        id: destroy
         working-directory: ${{ github.workspace }}/aws/labs/${{ github.event.inputs.lab }}
         if: github.event.inputs.action == 'destroy'
         run: |
           terraform destroy -auto-approve -var='student_username=${{ github.event.inputs.student_username }}'
       - name: Notify backend
+        id: notify
+        if: github.event.inputs.action == 'apply'
         uses: ./.github/workflows/lab-ready-callback.yml
         with:
           student_username: ${{ github.event.inputs.student_username }}
+          status: ${{ steps.status.outputs.status }}
