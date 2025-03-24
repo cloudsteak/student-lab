@@ -19,10 +19,11 @@ jobs:
         id: auth
         env:
           AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}
+          BACKEND_HOSTNAME: ${{ vars.BACKEND_HOSTNAME }}
         run: |
 
           response=$(curl -s --request POST \
-            --url "https://$AUTH0_DOMAIN/oauth/token" \
+            --url "https://$BACKEND_HOSTNAME/oauth/token" \
             --header 'Content-Type: application/json' \
             --data '{
                 "grant_type": "client_credentials",
