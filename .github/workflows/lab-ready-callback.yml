@@ -18,7 +18,7 @@ jobs:
       - name: Get Auth0 token
         id: auth
         env:
-         AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}
+          AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}
         run: |
 
           response=$(curl -s --request POST \
