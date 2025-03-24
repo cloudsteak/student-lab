@@ -22,7 +22,7 @@ jobs:
         run: |
 
           response=$(curl -s --request POST \
-            --url https://$AUTH0_DOMAIN/oauth/token \
+            --url "https://$AUTH0_DOMAIN/oauth/token" \
             --header 'Content-Type: application/json' \
             --data '{
                 "grant_type": "client_credentials",
