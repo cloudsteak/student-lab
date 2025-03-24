@@ -101,7 +101,7 @@ jobs:
       - name: Notify backend
         id: notify
         if: github.event.inputs.action == 'apply'
-        uses: ./.github/workflows/lab-ready-callback.yml
+        uses: cloudsteak/student-lab/.github/workflows/lab-ready-callback.yml@main
         with:
           student_username: ${{ github.event.inputs.student_username }}
           status: ${{ steps.status.outputs.status }}
