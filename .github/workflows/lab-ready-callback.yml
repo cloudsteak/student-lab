@@ -10,6 +10,15 @@ on:
         required: false
         type: string
         default: "ready"
+    secrets:
+      AUTH0_AUDIENCE:
+        required: true
+      AUTH0_CLIENT_ID:
+        required: true
+      AUTH0_CLIENT_SECRET:
+        required: true
+      AUTH0_DOMAIN:
+        required: true
 
 jobs:
   notify-backend:
