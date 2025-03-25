@@ -28,13 +28,13 @@ jobs:
         id: auth
         run: |
           response=$(curl -s --request POST \
-            --url "https://${{ secrets.AUTH0_DOMAIN }}/oauth/token" \
+            --url "https://cloudsteak.eu.auth0.com/oauth/token" \
             --header 'Content-Type: application/json' \
             --data '{
                 "grant_type": "client_credentials",
-                "audience": "https://lab-backend.cloudmentor.hu",
-                "client_id": "6gk1vwptiu0mHZv7ROqxQCNNH7I7NLah",
-                "client_secret": "-bUDAXik2Wi00xquB0ZkQPlxeHiy3VBr7AeWZjCZQsMZzgmd9dCeY8cwOtahFW1j"
+                "audience": "${{ secrets.AUTH0_AUDIENCE }}",
+                "client_id": "${{ secrets.AUTH0_CLIENT_ID }}",
+                "client_secret": "${{ secrets.AUTH0_CLIENT_SECRET }}"
                 }')
 
           
