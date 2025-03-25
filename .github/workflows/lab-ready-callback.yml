@@ -18,9 +18,8 @@ jobs:
       - name: Get Auth0 token
         id: auth
         run: |
-
           response=$(curl -s --request POST \
-            --url "https://${{ vars.BACKEND_HOSTNAME }}/oauth/token" \
+            --url "https://${{ secrets.AUTH0_DOMAIN }}/oauth/token" \
             --header 'Content-Type: application/json' \
             --data '{
                 "grant_type": "client_credentials",
