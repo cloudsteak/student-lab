@@ -28,7 +28,7 @@ jobs:
         id: auth
         run: |
           response=$(curl -s --request POST \
-            --url "https://cloudsteak.eu.auth0.com/oauth/token" \
+            --url "https://${{ secrets.AUTH0_DOMAIN }}/oauth/token" \
             --header 'Content-Type: application/json' \
             --data '{
                 "grant_type": "client_credentials",
@@ -42,7 +42,7 @@ jobs:
           token=$(echo "$response" | jq -r .access_token)
 
           if [[ "$token" == "null" || -z "$token" ]]; then
-            echo "❌ Failed to get token: $response"
+            echo "Failed to get token: $response"
             exit 1
           fi
 
