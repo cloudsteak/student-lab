@@ -2,6 +2,11 @@
 resource "azurerm_resource_group" "rg" {
   name     = "${var.username}-basic-rg"
   location = var.location
+  tags     = local.tags
+  timeouts {
+    create = "60m"
+    delete = "60m"
+  }
 }
 
 module "STUDENT" {
