@@ -1,0 +1,9 @@
+{
+  "if": {
+    "field": "location",
+    "notIn": ["Sweden Central", "North Europe", "Poland Central"]
+  },
+  "then": {
+    "effect": "deny"
+  }
+}
