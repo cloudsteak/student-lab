@@ -173,3 +173,4 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 aws/labs/basic/.terraform.lock.hcl
+azure/utils/.terraform.lock.hcl
