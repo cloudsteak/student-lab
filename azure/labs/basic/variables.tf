@@ -14,7 +14,7 @@ variable "tenant_id" {
 variable "location" {
   description = "Azure region"
   type        = string
-  default     = "Poland Central"
+  default     = "Sweden Central"
 
 }
 
@@ -29,12 +29,6 @@ variable "password" {
   sensitive   = true
 }
 
-variable "module" {
-  description = "Module name to construct resource group name"
-  type        = string
-  default     = "basic"
-}
-
 variable "tags" {
   description = "Tags to be assigned to the resources"
   type        = map(string)
@@ -42,10 +36,11 @@ variable "tags" {
     environment = "training"
     owner       = "cloudmentor"
     student     = "true"
+    lab         = "basic"
   }
 
 }
 
 locals {
-  tags = merge(var.tags, { module = var.module }, { student_name = var.username })
+  tags = merge(var.tags, { student_name = var.username })
 }

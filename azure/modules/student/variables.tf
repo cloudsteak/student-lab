@@ -1,7 +1,7 @@
 variable "location" {
   description = "Azure region"
   type        = string
-  default     = "Poland Central"
+  default     = "Sweden Central"
 
 }
 
@@ -14,11 +14,6 @@ variable "password" {
   description = "Password for the EntraID user"
   type        = string
   sensitive   = true
-}
-
-variable "module" {
-  description = "Module name to construct resource group name"
-  type        = string
 }
 
 variable "tags" {
