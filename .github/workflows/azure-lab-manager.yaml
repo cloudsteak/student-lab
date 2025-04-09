@@ -106,7 +106,7 @@ jobs:
             -var='subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}' \
             -var='student_username=${{ github.event.inputs.student_username }}' \
             -var='student_password=${{ github.event.inputs.student_password }}' \
-            -var='region=${{ secrets.AZURE_REGION }}'
+            -var='location=${{ secrets.AZURE_REGION }}'
 
       - name: Set lab status output
         id: status
@@ -133,7 +133,7 @@ jobs:
             -var='subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}' \
             -var='student_username=${{ github.event.inputs.student_username }}' \
             -var='student_password=${{ github.event.inputs.student_password }}' \
-            -var='region=${{ secrets.AZURE_REGION }}'
+            -var='location=${{ secrets.AZURE_REGION }}'
 
   notify-backend:
     name: Notify backend when lab is ready
