@@ -93,6 +93,12 @@ jobs:
         working-directory: ${{ github.workspace }}/azure/labs/${{ github.event.inputs.lab }}
         if: github.event.inputs.action == 'apply'
         continue-on-error: true
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
         run: |
           # Apply Terraform configuration
           terraform apply -auto-approve \
@@ -115,6 +121,12 @@ jobs:
         id: destroy
         working-directory: ${{ github.workspace }}/azure/labs/${{ github.event.inputs.lab }}
         if: github.event.inputs.action == 'destroy'
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
         run: |
           terraform destroy -auto-approve \
             -var='tenant_id=${{ secrets.AZURE_TENANT_ID }}' \
