@@ -39,7 +39,7 @@ on:
 
 jobs:
   terraform:
-    name: ${{ github.event.inputs.action }} - aws - ${{ github.event.inputs.student_username }}
+    name: ${{ github.event.inputs.action }} - azure - ${{ github.event.inputs.student_username }}
     runs-on: ubuntu-latest
     outputs:
       status: ${{ steps.status.outputs.status }}
@@ -84,7 +84,7 @@ jobs:
 
       - name: Terraform Apply
         id: apply
-        working-directory: ${{ github.workspace }}/aws/labs/${{ github.event.inputs.lab }}
+        working-directory: ${{ github.workspace }}/azure/labs/${{ github.event.inputs.lab }}
         if: github.event.inputs.action == 'apply'
         continue-on-error: true
         run: |
@@ -107,7 +107,7 @@ jobs:
 
       - name: Terraform Destroy
         id: destroy
-        working-directory: ${{ github.workspace }}/aws/labs/${{ github.event.inputs.lab }}
+        working-directory: ${{ github.workspace }}/azure/labs/${{ github.event.inputs.lab }}
         if: github.event.inputs.action == 'destroy'
         run: |
           terraform destroy -auto-approve \
