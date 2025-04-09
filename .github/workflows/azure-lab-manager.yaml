@@ -1,0 +1,131 @@
+################################################
+# Azure Lab Manager - Terraform Workflow fow Microsoft Azure0
+# This workflow is used to manage Azure labs using Terraform
+# It is designed to be triggered manually via the GitHub Actions API
+# It supports the following actions: apply, destroy
+# It requires the following secrets: AZURE_CLIENT_ID, AZURE_CLIENT_SECRET, AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID
+# It requires the following environment variables: AZURE_REGION
+################################################
+
+name: Azure Lab Manager
+
+env:
+  TERRAFORM_VERSION: 1.11.0
+
+on:
+  workflow_dispatch: # Allows manual trigger via API
+    inputs:
+      lab:
+        description: "Lab name"
+        type: choice
+        options:
+          - "basic"
+        required: true
+        default: "basic"
+      action:
+        description: "Terraform action"
+        type: choice
+        options:
+          - "apply"
+          - "destroy"
+        required: true
+        default: "apply"
+      student_username:
+        description: "Unique student username"
+        required: true
+      student_password:
+        description: "Unique student password"
+        required: true
+
+jobs:
+  terraform:
+    name: ${{ github.event.inputs.action }} - aws - ${{ github.event.inputs.student_username }}
+    runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.status.outputs.status }}
+
+    steps:
+      - name: Checkout repository
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Configure Azure Credentials
+        id: azure-credentials
+        uses: azure/login@v2
+        with:
+          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
+
+      - name: Verify Azure CLI
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az account list -o table
+            az group list -o table
+
+      - name: Set up Terraform
+        id: setup
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      - name: Terraform Init
+        id: init
+        working-directory: ${{ github.workspace }}/azure/labs/${{ github.event.inputs.lab }}
+        run: |
+          terraform init -reconfigure \
+            -backend-config=resource_group_name=${{ vars.TF_AZURE_RG_NAME }} \
+            -backend-config=storage_account_name=${{ vars.TF_AZURE_SA_NAME}}
+            -backend-config=container_name=${{ vars.TF_AZURE_CONTAINER_NAME }} \
+            -backend-config=key=${{ github.event.inputs.student_username }}/terraform.tfstate \
+            -var='tenant_id=${{ secrets.AZURE_TENANT_ID }}' \
+            -var='subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}'
+
+      - name: Terraform Apply
+        id: apply
+        working-directory: ${{ github.workspace }}/aws/labs/${{ github.event.inputs.lab }}
+        if: github.event.inputs.action == 'apply'
+        continue-on-error: true
+        run: |
+          # Apply Terraform configuration
+          terraform apply -auto-approve \
+            -var='tenant_id=${{ secrets.AZURE_TENANT_ID }}' \
+            -var='subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}' \
+            -var='student_username=${{ github.event.inputs.student_username }}' \
+            -var='student_password=${{ github.event.inputs.student_password }}' \
+            -var='region=${{ secrets.AZURE_REGION }}'
+
+      - name: Set lab status output
+        id: status
+        run: |
+          if [ "${{ steps.apply.outcome }}" == "success" ]; then
+            echo "status=ready" >> $GITHUB_OUTPUT
+          else
+            echo "status=failed" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Terraform Destroy
+        id: destroy
+        working-directory: ${{ github.workspace }}/aws/labs/${{ github.event.inputs.lab }}
+        if: github.event.inputs.action == 'destroy'
+        run: |
+          terraform destroy -auto-approve \
+            -var='tenant_id=${{ secrets.AZURE_TENANT_ID }}' \
+            -var='subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}' \
+            -var='student_username=${{ github.event.inputs.student_username }}' \
+            -var='student_password=${{ github.event.inputs.student_password }}' \
+            -var='region=${{ secrets.AZURE_REGION }}'
+
+  notify-backend:
+    name: Notify backend when lab is ready
+    needs: terraform
+    if: github.event.inputs.action == 'apply'
+    uses: cloudsteak/student-lab/.github/workflows/lab-ready-callback.yml@main
+    with:
+      student_username: ${{ github.event.inputs.student_username }}
+      status: ${{ needs.terraform.outputs.status }}
+    secrets:
+      AUTH0_AUDIENCE: ${{ secrets.AUTH0_AUDIENCE }}
+      AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
+      AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}

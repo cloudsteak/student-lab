@@ -1,6 +1,6 @@
 # Create Resource Group
 resource "azurerm_resource_group" "rg" {
-  name     = "${var.username}-basic-rg"
+  name     = "${var.student_username}-basic-rg"
   location = var.location
   tags     = local.tags
   timeouts {
@@ -12,8 +12,8 @@ resource "azurerm_resource_group" "rg" {
 module "STUDENT" {
   source              = "../../modules/student"
   location            = var.location
-  username            = var.username
-  password            = var.password
+  username            = var.student_username
+  password            = var.student_password
   resource_group_id   = azurerm_resource_group.rg.id
   resource_group_name = azurerm_resource_group.rg.name
   tags                = local.tags
