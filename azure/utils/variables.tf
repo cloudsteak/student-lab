@@ -13,7 +13,7 @@ variable "tenant_id" {
 variable "location" {
   description = "Azure region"
   type        = string
-  default     = "Poland Central"
+  default     = "Sweden Central"
 
 }
 
@@ -28,6 +28,3 @@ variable "tags" {
 
 }
 
-locals {
-  tags = merge(var.tags)
-}
