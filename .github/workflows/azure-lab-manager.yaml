@@ -20,6 +20,7 @@ on:
         type: choice
         options:
           - "basic"
+          - "vnet-basic"
         required: true
         default: "basic"
       action:
