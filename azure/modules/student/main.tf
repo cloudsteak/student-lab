@@ -1,6 +1,6 @@
 # Create EntraID User
 resource "azuread_user" "user" {
-  user_principal_name   = "${var.username}@cloudsteak.com"
+  user_principal_name   = "${var.username}@evolvia.hu"
   display_name          = upper(var.username)
   mail_nickname         = var.username
   password              = var.password
