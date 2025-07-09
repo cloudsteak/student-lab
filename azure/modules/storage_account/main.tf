@@ -1,12 +1,12 @@
 # Random name for Storageaccount
-resource "random_string" "sa_name" {
+resource "random_string" "this" {
   length  = 18
   upper   = false
   special = false
 }
 
-resource "azurerm_storage_account" "primary" {
-  name                     = "sa${random_string.sa_name.result}" # Ensure the name is globally unique
+resource "azurerm_storage_account" "this" {
+  name                     = "sa${random_string.this.result}" # Ensure the name is globally unique
   location                 = var.location
   resource_group_name      = var.resource_group_name
   account_tier             = var.tier
