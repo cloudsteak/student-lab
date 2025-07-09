@@ -6,7 +6,7 @@ variable "subscription_id" {
   description = "value of the Azure subscription ID"
 }
 
-variable "main_resource_group_name" {
+variable "resource_group_name" {
   type        = string
   description = "value of the Azure resource group name"
 }
@@ -19,30 +19,35 @@ variable "location" {
 variable "tags" {
   type        = map(string)
   description = "A map of tags to add to all resources."
-  default     = {
-    owner     = "CloudMentor"
-    purpose   = "Educational"
+  default = {
+    owner   = "Evolvia"
+    purpose = "Practice"
   }
-  
+
 }
 
 ##########################
 # Storage Account Inputs #
 ##########################
 
-variable "storage_account_name_suffix" {
-  type        = string
-  description = "value of the Azure storage account suffix"
-}
-
-variable "storage_account_tier" {
+variable "tier" {
   type        = string
   description = "value of the Azure storage account tier"
   default     = "Standard"
 }
 
-variable "storage_account_replication_type" {
+variable "replication_type" {
   type        = string
   description = "value of the Azure storage account replication type"
   default     = "LRS"
+}
+
+variable "sftp_enabled" {
+  type    = bool
+  default = "false"
+}
+
+variable "nfsv3_enabled" {
+  type    = bool
+  default = false
 }
