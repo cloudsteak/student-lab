@@ -21,6 +21,8 @@ on:
         options:
           - "basic"
           - "vnet-basic"
+          - "vm-linux"
+          - "vm-windows"
         required: true
         default: "basic"
       action:
