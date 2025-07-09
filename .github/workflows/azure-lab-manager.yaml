@@ -19,10 +19,15 @@ on:
         description: "Lab name"
         type: choice
         options:
+          - "ai-basic"
           - "basic"
+          - "cloudshell-cli"
+          - "cloudshell-powershell"
           - "vnet-basic"
           - "vm-linux"
           - "vm-windows"
+          - "vm-nlb"
+          - "vm-vmss"
         required: true
         default: "basic"
       action:
