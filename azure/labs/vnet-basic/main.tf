@@ -10,7 +10,7 @@ resource "azurerm_resource_group" "rg" {
 }
 
 module "STUDENT" {
-  source              = "../../modules/student"
+  source              = "../../modules/user"
   location            = var.location
   username            = var.student_username
   password            = var.student_password
