@@ -54,7 +54,7 @@ variable "app_service_plan_name_suffix" {
 variable "app_service_plan_sku" {
   type        = string
   description = "value of the Azure app service plan SKU"
-  default = "B1"
+  default = "B3"
 }
 
 
