@@ -6,7 +6,7 @@ variable "subscription_id" {
   description = "value of the Azure subscription ID"
 }
 
-variable "main_resource_group_name" {
+variable "resource_group_name" {
   type        = string
   description = "value of the Azure resource group name"
 }
@@ -20,9 +20,8 @@ variable "tags" {
   type        = map(string)
   description = "A map of tags to add to all resources."
   default = {
-    owner   = "CloudMentor"
-    purpose = "Educational"
-    type    = "Alap"
+    owner   = "Evolvia"
+    purpose = "Practice"
   }
 }
 
@@ -30,23 +29,11 @@ variable "tags" {
 # VNET Inputs #
 ###############
 
-variable "vnet_name_suffix" {
-  type        = string
-  description = "value of the Azure virtual network name suffix"
-  default     = "vnet"
-}
-
 variable "subnet_1_name" {
   type        = string
   description = "value of the Azure subnet 1 name"
-  default     = "alap"
+  default     = "alapertelmezett"
 
-}
-
-variable "nsg_name_suffix" {
-  type        = string
-  description = "value of the Azure network security group name suffix"
-  default     = "nsg"
 }
 
 variable "vnet_address_space" {
