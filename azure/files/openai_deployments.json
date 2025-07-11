@@ -21,7 +21,7 @@
     "model_name" : "gpt-4o-mini",
     "model_version" : "2024-07-18",
     "scale_type" : "Standard",
-    "capacity" : 400
+    "capacity" : 200
   },
   "embedding_model" : {
     "name" : "text-embedding-ada-002",
