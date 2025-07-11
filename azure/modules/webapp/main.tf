@@ -1,22 +1,20 @@
-resource "azurerm_service_plan" "webapp" {
-  name                = "${var.webapp_prefix}-sp"
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  os_type             = var.os_type
-  sku_name            = var.sku
-  tags                = var.tags
+# Random name for WebApp
+resource "random_string" "this" {
+  length  = 10
+  upper   = false
+  special = false
 }
 
-resource "azurerm_linux_web_app" "webapp" {
-  name                = "${var.webapp_prefix}-webapp"
+resource "azurerm_linux_web_app" "this" {
+  name                = "webapp-${random_string.this.result}"
   resource_group_name = var.resource_group_name
   location            = var.location
-  service_plan_id     = azurerm_service_plan.webapp.id
+  service_plan_id     = var.app_service_plan_id
   site_config {
     application_stack {
       node_version = var.application_stack_version
     }
-      
+
   }
 
   timeouts {
@@ -25,4 +23,6 @@ resource "azurerm_linux_web_app" "webapp" {
   }
 
   tags = var.tags
+
+  depends_on = [ var.app_service_plan_id ]
 }
