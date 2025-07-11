@@ -10,7 +10,7 @@ resource "azurerm_resource_group" "rg" {
 }
 
 module "STUDENT" {
-  source              = "../../modules/student"
+  source              = "../../modules/user"
   location            = var.location
   username            = var.student_username
   password            = var.student_password
@@ -18,14 +18,3 @@ module "STUDENT" {
   resource_group_name = azurerm_resource_group.rg.name
   tags                = local.tags
 }
-
-
-# module "WEBAPP" {
-#   source              = "../../modules/webapp"
-#   location            = var.location
-#   webapp_prefix       = var.username
-#   resource_group_name = azurerm_resource_group.rg.name
-#   os_type             = "Linux"
-#   sku                 = "B1"
-#   tags                = local.tags
-# }

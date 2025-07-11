@@ -5,7 +5,7 @@ provider "aws" {
 data "aws_caller_identity" "current" {}
 
 module "student" {
-  source            = "../../modules/student"
+  source            = "../../modules/user"
   student_username  = var.student_username
   aws_region        = var.aws_region
   tags              = local.tags

@@ -175,3 +175,4 @@ cython_debug/
 
 **/.terraform.lock.hcl
 
+.DS_Store
