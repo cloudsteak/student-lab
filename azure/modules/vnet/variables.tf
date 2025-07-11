@@ -45,3 +45,10 @@ variable "subnet_address_prefix" {
   type        = string
   description = "value of the Azure subnet address prefix"
 }
+
+
+variable "nsg_file_name" {
+  type    = string
+  default = "security_rules_basic.json"
+  description = "Possible values: security_rules_basic.json, security_rules_basic_no_http.json, security_rules_basic_no_management.json, security_rules_basic_no_rdp.json, security_rules_basic_no_ssh.json"
+}

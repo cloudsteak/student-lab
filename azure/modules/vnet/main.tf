@@ -28,7 +28,7 @@ resource "azurerm_network_security_group" "this" {
 
   dynamic "security_rule" {
 
-    for_each = jsondecode(file("../../files/security_rules_basic.json"))
+    for_each = jsondecode(file("../../files/${var.nsg_file_name}"))
     content {
       name                       = security_rule.value["name"]
       priority                   = security_rule.value["priority"]
