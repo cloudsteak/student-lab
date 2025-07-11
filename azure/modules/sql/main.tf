@@ -1,53 +1,24 @@
-resource "azurerm_resource_group" "db" {
-  name     = "${var.resource_group_name_prefix}-${var.modules_resource_group_name_suffix}"
-  location = var.location
-  tags = var.tags
-  depends_on = [
-    var.main_resource_group_name
-  ]
+# Random name for SQL
+resource "random_string" "this" {
+  length  = 10
+  upper   = false
+  special = false
 }
-
-# Add resource lock on db resource group
-resource "azurerm_management_lock" "mentorklub_db_rg_lock" {
-  name       = "DeleteLockMentorKlubDBRG"
-  scope      = azurerm_resource_group.db.id
-  lock_level = "CanNotDelete"
-  notes      = "This lock is to prevent user deletion of the MentorKlub DB resource group"
-
-  timeouts {
-    delete = "30m" # Extend delete timeout from the default (which is lower)
-    create = "30m" # Extend create timeout from the default (which is lower)
-  }
-}
-
-# Fetch the Entradata ID Group
-data "azuread_group" "mentorklub_user_group_name" {
-  display_name = var.entra_id_group_name
-}
-
-# Assign the Reader role to the Entradata ID Group
-resource "azurerm_role_assignment" "mentorklub_user_group_name" {
-  scope                = azurerm_resource_group.db.id
-  role_definition_name = "Reader"
-  principal_id         = replace(data.azuread_group.mentorklub_user_group_name.id, "//groups//", "")
-
-}
-
-resource "azurerm_mssql_server" "sql_server" {
-  name                         = "${var.main_resource_group_name}-sql"
+resource "azurerm_mssql_server" "this" {
+  name                         = "mssql-${random_string.this.result}"
   location                     = var.location
-  resource_group_name          = azurerm_resource_group.db.name
+  resource_group_name          = var.resource_group_name
   version                      = "12.0"
   administrator_login          = var.db_username
   administrator_login_password = var.db_password
-  tags = var.tags
+  tags                         = var.tags
 
 
 }
 
-resource "azurerm_mssql_database" "database" {
+resource "azurerm_mssql_database" "this" {
   name                        = var.db_name
-  server_id                   = azurerm_mssql_server.sql_server.id
+  server_id                   = azurerm_mssql_server.this.id
   collation                   = "SQL_Latin1_General_CP1_CI_AS"
   auto_pause_delay_in_minutes = 60
   max_size_gb                 = 5
@@ -72,10 +43,9 @@ resource "azurerm_mssql_database" "database" {
   }
 }
 
-
-resource "azurerm_mssql_firewall_rule" "allow_public_access" {
+resource "azurerm_mssql_firewall_rule" "this" {
   name             = "AllowPublicIP"
-  server_id        = azurerm_mssql_server.sql_server.id
+  server_id        = azurerm_mssql_server.this.id
   start_ip_address = "0.0.0.1"
   end_ip_address   = "255.255.255.255"
 }
