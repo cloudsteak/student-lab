@@ -6,14 +6,9 @@ variable "subscription_id" {
   description = "value of the Azure subscription ID"
 }
 
-variable "main_resource_group_name" {
+variable "resource_group_name" {
   type        = string
   description = "value of the Azure resource group name"
-}
-
-variable "modules_resource_group_name_suffix" {
-  type        = string
-  description = "value of the Azure resource group name suffix for modules"
 }
 
 variable "location" {
@@ -24,32 +19,20 @@ variable "location" {
 variable "tags" {
   type        = map(string)
   description = "A map of tags to add to all resources."
-  default     = {
-    owner     = "CloudMentor"
-    purpose   = "Educational"
+  default = {
+    owner   = "Evolvia"
+    purpose = "Practice"
   }
-  
-}
 
-
-variable "entra_id_group_name" {
-  type = string
 }
 
 #############
 # AI Inputs #
 #############
 
-variable "resource_group_name_prefix" {
-  type        = string
-  description = "value of the Azure resource group name prefix"
-  default     = "ai"
-}
-
-variable "ai_name_suffix" {
-  type        = string
-  description = "value of the Azure NAT gateway name suffix"
-  default     = "ai"
+variable "is_rag_files" {
+  type    = bool
+  default = false
 }
 
 variable "doc_container_name" {
@@ -67,10 +50,11 @@ variable "doc_container_access_type" {
 variable "local_doc_directory_path" {
   type        = string
   description = "value of the local document directory path for RAG"
-  default = "../../files/docs"
+  default     = "../../files/docs"
 }
 
 variable "rag_storage_account_name" {
   type        = string
   description = "value of the Azure storage account suffix for RAG"
+  default = "fake"
 }
