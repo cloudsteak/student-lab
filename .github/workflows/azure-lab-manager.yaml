@@ -28,6 +28,8 @@ on:
           - "vm-windows"
           - "vm-nlb"
           - "vm-vmss"
+          - "mk-7-01-portal"
+          - "mk-7-01-lb"
         required: true
         default: "basic"
       action:
