@@ -30,6 +30,7 @@ on:
           - "vm-vmss"
           - "mk-7-01-portal"
           - "mk-7-01-lb"
+          - "mk-7-01-vmss"
         required: true
         default: "basic"
       action:
