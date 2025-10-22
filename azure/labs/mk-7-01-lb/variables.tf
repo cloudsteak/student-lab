@@ -32,7 +32,7 @@ variable "tags" {
     environment = "training"
     owner       = "cloudmentor"
     student     = "true"
-    lab         = "basic"
+    lab         = "mk-7-01-lb"
   }
 
 }
