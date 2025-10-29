@@ -32,6 +32,15 @@ on:
           - "mk-7-01-vm"
           - "mk-7-01-lb"
           - "mk-7-01-vmss"
+          - "mk-7-01-az-cli"
+          - "mk-7-01-az-ps"
+        required: true
+        default: "basic"
+      directory:
+        description: "Lab directory name"
+        type: choice
+        options:
+          - "basic"
         required: true
         default: "basic"
       action:
