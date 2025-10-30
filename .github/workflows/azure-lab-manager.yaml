@@ -11,6 +11,7 @@ name: Azure Lab Manager
 
 env:
   TERRAFORM_VERSION: 1.11.0
+  AZURE_CLI_VERSION: 2.65.0
 
 on:
   workflow_dispatch: # Allows manual trigger via API
@@ -138,7 +139,7 @@ jobs:
            github.event.inputs.lab == 'mk-7-01-az-ps')
         uses: azure/cli@v2
         with:
-          azcliversion: latest
+          azcliversion: ${{ env.AZURE_CLI_VERSION }}
           inlineScript: |
             echo "Deleting all VMs in $rg..."
             az vm list -g "$rg" --query "[].name" -o tsv | \
