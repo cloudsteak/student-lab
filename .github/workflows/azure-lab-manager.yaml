@@ -131,6 +131,9 @@ jobs:
             echo "status=failed" >> $GITHUB_OUTPUT
           fi
 
+      - name: Clear Azure CLI cache
+        run: rm -rf ~/.azure
+        
       - name: Azure CLI script
         id: azure-cli
         if: |
