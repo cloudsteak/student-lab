@@ -147,10 +147,17 @@ jobs:
         with:
           azcliversion: latest
           inlineScript: |
-            # Delete all VMs in the student's resource group
-            rg="${{ github.event.inputs.student_username }}"
+            echo "Deleting all VMs in $rg..."
             az vm list -g "$rg" --query "[].name" -o tsv | \
-            xargs -I {} az vm delete -g "$rg" -n {} --yes     
+            xargs -I {} az vm delete -g "$rg" -n {} --yes || true
+
+            echo "Deleting all Public IPs in $rg..."
+            az network public-ip list -g "$rg" --query "[].name" -o tsv | \
+            xargs -I {} az network public-ip delete -g "$rg" -n {} || true  
+
+            echo "Deleting all NICs in $rg..."
+            az network nic list -g "$rg" --query "[].name" -o tsv | \
+            xargs -I {} az network nic delete -g "$rg" -n {} || true 
 
       - name: Terraform Destroy
         id: destroy
