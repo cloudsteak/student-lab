@@ -139,21 +139,29 @@ jobs:
 
       - name: Terraform Destroy
         id: destroy
-        working-directory: ${{ github.workspace }}/azure/labs/${{ github.event.inputs.lab }}
         if: github.event.inputs.action == 'destroy'
+        uses: nick-fields/retry@v3
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
-        run: |
-          terraform destroy -auto-approve \
-            -var='tenant_id=${{ secrets.AZURE_TENANT_ID }}' \
-            -var='subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}' \
-            -var='student_username=${{ github.event.inputs.student_username }}' \
-            -var='student_password=${{ github.event.inputs.student_password }}' \
-            -var='location=${{ vars.AZURE_REGION }}'
+        with:
+          max_attempts: 3
+          timeout_minutes: 30
+          retry_wait_seconds: 15
+          command: |
+            # Go to the lab directory
+            cd ${{ github.workspace }}/azure/labs/${{ github.event.inputs.lab }}
+            # Destroy Terraform-managed infrastructure
+            terraform destroy -auto-approve \
+              -var='tenant_id=${{ secrets.AZURE_TENANT_ID }}' \
+              -var='subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}' \
+              -var='student_username=${{ github.event.inputs.student_username }}' \
+              -var='student_password=${{ github.event.inputs.student_password }}' \
+              -var='location=${{ vars.AZURE_REGION }}'
+        
 
   notify-backend:
     name: Notify backend when lab is ready
