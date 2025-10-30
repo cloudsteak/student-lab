@@ -137,6 +137,33 @@ jobs:
             echo "status=failed" >> $GITHUB_OUTPUT
           fi
 
+      - name: Azure Login
+        id: azure-login
+        if: github.event.inputs.action == 'destroy'
+        uses: azure/login@v2
+        with:
+          enable-AzPSSession: false
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+
+      - name: Azure CLI script
+        id: azure-cli
+        if: |
+          github.event.inputs.action == 'destroy' &&
+          (github.event.inputs.lab == 'mk-7-01-az-cli' ||
+           github.event.inputs.lab == 'mk-7-01-az-ps')
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            # Delete all VMs in the student's resource group
+            rg="${{ github.event.inputs.student_username }}"
+            az vm list -g "$rg" --query "[].name" -o tsv | \
+            xargs -I {} az vm delete -g "$rg" -n {} --yes     
+
       - name: Terraform Destroy
         id: destroy
         if: github.event.inputs.action == 'destroy'
