@@ -11,7 +11,6 @@ name: Azure Lab Manager
 
 env:
   TERRAFORM_VERSION: 1.11.0
-  AZURE_CLI_VERSION: 2.65.0
 
 on:
   workflow_dispatch: # Allows manual trigger via API
@@ -131,30 +130,25 @@ jobs:
             echo "status=failed" >> $GITHUB_OUTPUT
           fi
 
-      - name: Clear Azure CLI cache
-        run: rm -rf ~/.azure
-        
       - name: Azure CLI script
         id: azure-cli
         if: |
           github.event.inputs.action == 'destroy' &&
           (github.event.inputs.lab == 'mk-7-01-az-cli' ||
            github.event.inputs.lab == 'mk-7-01-az-ps')
-        uses: azure/cli@v2
-        with:
-          azcliversion: ${{ env.AZURE_CLI_VERSION }}
-          inlineScript: |
-            echo "Deleting all VMs in $rg..."
-            az vm list -g "$rg" --query "[].name" -o tsv | \
-            xargs -I {} az vm delete -g "$rg" -n {} --yes || true
+        run: |
+          echo "Deleting all VMs in $rg..."
+          az vm list -g "$rg" --query "[].name" -o tsv | \
+          xargs -I {} az vm delete -g "$rg" -n {} --yes || true
 
-            echo "Deleting all Public IPs in $rg..."
-            az network public-ip list -g "$rg" --query "[].name" -o tsv | \
-            xargs -I {} az network public-ip delete -g "$rg" -n {} || true  
+          echo "Deleting all Public IPs in $rg..."
+          az network public-ip list -g "$rg" --query "[].name" -o tsv | \
+          xargs -I {} az network public-ip delete -g "$rg" -n {} || true  
 
-            echo "Deleting all NICs in $rg..."
-            az network nic list -g "$rg" --query "[].name" -o tsv | \
-            xargs -I {} az network nic delete -g "$rg" -n {} || true 
+          echo "Deleting all NICs in $rg..."
+          az network nic list -g "$rg" --query "[].name" -o tsv | \
+          xargs -I {} az network nic delete -g "$rg" -n {} || true
+        shell: bash
 
       - name: Terraform Destroy
         id: destroy
@@ -180,7 +174,6 @@ jobs:
               -var='student_username=${{ github.event.inputs.student_username }}' \
               -var='student_password=${{ github.event.inputs.student_password }}' \
               -var='location=${{ vars.AZURE_REGION }}'
-        
 
   notify-backend:
     name: Notify backend when lab is ready
