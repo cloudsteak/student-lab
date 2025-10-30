@@ -11,6 +11,7 @@ name: Azure Lab Manager
 
 env:
   TERRAFORM_VERSION: 1.11.0
+  AZURE_API_VERSION: "2025-04-01"
 
 on:
   workflow_dispatch: # Allows manual trigger via API
@@ -137,17 +138,31 @@ jobs:
           (github.event.inputs.lab == 'mk-7-01-az-cli' ||
            github.event.inputs.lab == 'mk-7-01-az-ps')
         run: |
+          rg="${{ github.event.inputs.student_username }}"
+          api="${AZURE_API_VERSION}"
+
           echo "Deleting all VMs in $rg..."
-          az vm list -g "$rg" --query "[].name" -o tsv | \
-          xargs -I {} az vm delete -g "$rg" -n {} --yes || true
+          vms=$(az vm list -g "$rg" --api-version "$api" --query "[].name" -o tsv)
+          for vm in $vms; do
+            echo "Deleting VM: $vm"
+            az vm delete -g "$rg" -n "$vm" --yes --api-version "$api"
+          done
 
           echo "Deleting all Public IPs in $rg..."
-          az network public-ip list -g "$rg" --query "[].name" -o tsv | \
-          xargs -I {} az network public-ip delete -g "$rg" -n {} || true  
+          pips=$(az network public-ip list -g "$rg" --api-version "$api" --query "[].name" -o tsv)
+          for pip in $pips; do
+            echo "Deleting Public IP: $pip"
+            az network public-ip delete -g "$rg" -n "$pip" --api-version "$api"
+          done
 
           echo "Deleting all NICs in $rg..."
-          az network nic list -g "$rg" --query "[].name" -o tsv | \
-          xargs -I {} az network nic delete -g "$rg" -n {} || true
+          nics=$(az network nic list -g "$rg" --api-version "$api" --query "[].name" -o tsv)
+          for nic in $nics; do
+            echo "Deleting NIC: $nic"
+            az network nic delete -g "$rg" -n "$nic" --api-version "$api"
+          done
+
+          echo "✅ Azure cleanup completed for $rg"
         shell: bash
 
       - name: Terraform Destroy
