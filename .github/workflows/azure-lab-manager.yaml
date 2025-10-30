@@ -11,7 +11,7 @@ name: Azure Lab Manager
 
 env:
   TERRAFORM_VERSION: 1.11.0
-  AZURE_CLI_VERSION: 2.72.0
+  AZURE_CLI_VERSION: 2.65.0
 
 on:
   workflow_dispatch: # Allows manual trigger via API
@@ -131,41 +131,31 @@ jobs:
             echo "status=failed" >> $GITHUB_OUTPUT
           fi
 
-      - name: Cleanup Azure resources
+      - name: Clear Azure CLI cache
+        run: rm -rf ~/.azure
+        
+      - name: Azure CLI script
         id: azure-cli
         uses: azure/cli@v2
         if: |
           github.event.inputs.action == 'destroy' &&
           (github.event.inputs.lab == 'mk-7-01-az-cli' ||
            github.event.inputs.lab == 'mk-7-01-az-ps')
+        uses: azure/cli@v2
         with:
           azcliversion: ${{ env.AZURE_CLI_VERSION }}
           inlineScript: |
-            rg="${{ github.event.inputs.student_username }}"
-    
             echo "Deleting all VMs in $rg..."
-            vms=$(az vm list -g "$rg"  --query "[].name" -o tsv)
-            for vm in $vms; do
-              echo "Deleting VM: $vm"
-              az vm delete -g "$rg" -n "$vm" --yes 
-            done
+            az vm list -g "$rg" --query "[].name" -o tsv | \
+            xargs -I {} az vm delete -g "$rg" -n {} --yes || true
+
+            echo "Deleting all Public IPs in $rg..."
+            az network public-ip list -g "$rg" --query "[].name" -o tsv | \
+            xargs -I {} az network public-ip delete -g "$rg" -n {} || true  
 
             echo "Deleting all NICs in $rg..."
-            nics=$(az network nic list -g "$rg"  --query "[].name" -o tsv)
-            for nic in $nics; do
-              echo "Deleting NIC: $nic"
-              az network nic delete -g "$rg" -n "$nic"
-            done
-          
-            echo "Deleting all Public IPs in $rg..."
-            pips=$(az network public-ip list -g "$rg"  --query "[].name" -o tsv)
-            for pip in $pips; do
-              echo "Deleting Public IP: $pip"
-              az network public-ip delete -g "$rg" -n "$pip"
-            done
-
-            echo "✅ Azure cleanup completed for $rg"
-
+            az network nic list -g "$rg" --query "[].name" -o tsv | \
+            xargs -I {} az network nic delete -g "$rg" -n {} || true 
 
       - name: Terraform Destroy
         id: destroy
