@@ -18,17 +18,3 @@ module "USER" {
   resource_group_name = azurerm_resource_group.rg.name
   tags                = local.tags
 }
-
-module "VNET" {
-  source = "../../modules/vnet"
-
-  location              = var.location
-  subscription_id       = var.subscription_id
-  resource_group_name   = azurerm_resource_group.rg.name
-  vnet_address_space    = ["10.20.0.0/16"]
-  subnet_address_prefix = "10.20.0.0/24"
-  tags                  = var.tags
-
-  depends_on = [module.USER]
-
-}
