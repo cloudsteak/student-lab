@@ -35,6 +35,7 @@ on:
           - "mk-7-01-vmss"
           - "mk-7-01-az-cli"
           - "mk-7-01-az-ps"
+          - "mk-7-01-webapp-node"
         required: true
         default: "basic"
       directory:
