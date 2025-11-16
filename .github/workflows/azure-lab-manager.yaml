@@ -36,6 +36,7 @@ on:
           - "mk-7-01-az-cli"
           - "mk-7-01-az-ps"
           - "mk-7-01-webapp-node"
+          - "mk-7-01-webapp-node-docker"
         required: true
         default: "basic"
       directory:
