@@ -1,16 +1,25 @@
-variable "location" {
-  description = "Azure region"
+variable "subscription_id" {
+  description = "Azure subscription ID"
   type        = string
-  default     = "Sweden Central"
 
 }
 
-variable "username" {
+variable "tenant_id" {
+  description = "Azure tenant ID"
+  type        = string
+}
+
+variable "location" {
+  description = "Azure region"
+  type        = string
+}
+
+variable "student_username" {
   description = "EntraID username"
   type        = string
 }
 
-variable "password" {
+variable "student_password" {
   description = "Password for the EntraID user"
   type        = string
   sensitive   = true
@@ -22,22 +31,12 @@ variable "tags" {
   default = {
     environment = "training"
     owner       = "cloudmentor"
+    student     = "true"
+    lab         = "mk-7-01-webapp-node-docker"
   }
 
 }
 
-variable "resource_group_id" {
-  description = "Resource Group ID"
-  type        = string
-}
-
-variable "resource_group_name" {
-  description = "Resource Group Name"
-  type        = string
-}
-
-variable "group_name" {
-  type        = string
-  description = "User Group Name for Lab Users"
-  default     = "Evolvia-Labs"
+locals {
+  tags = merge(var.tags, { student_name = var.student_username })
 }

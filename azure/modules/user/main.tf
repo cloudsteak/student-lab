@@ -15,3 +15,8 @@ resource "azurerm_role_assignment" "contributor" {
   principal_id         = azuread_user.user.object_id
 }
 
+# Add user to Group
+resource "azuread_group_member" "user_in_group" {
+  group_object_id  = data.azuread_group.user_group.id
+  member_object_id = azuread_user.user.id
+}
