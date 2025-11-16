@@ -19,11 +19,11 @@ variable "password" {
 variable "tags" {
   description = "Tags to be assigned to the resources"
   type        = map(string)
-  default     = {
+  default = {
     environment = "training"
     owner       = "cloudmentor"
   }
-  
+
 }
 
 variable "resource_group_id" {
@@ -34,4 +34,10 @@ variable "resource_group_id" {
 variable "resource_group_name" {
   description = "Resource Group Name"
   type        = string
+}
+
+variable "group_name" {
+  type        = string
+  description = "User Group Name for Lab Users"
+  default     = "Evolvia-Labs"
 }
