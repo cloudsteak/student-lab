@@ -64,7 +64,7 @@ on:
 
 jobs:
   terraform:
-    name: ${{ github.event.inputs.action }} - azure - ${{ github.event.inputs.student_username }}
+    name: ${{ github.event.inputs.action }} - ${{ github.event.inputs.student_username }}
     runs-on: ubuntu-latest
     outputs:
       status: ${{ steps.status.outputs.status }}
@@ -145,7 +145,7 @@ jobs:
           azcliversion: ${{ env.AZURE_CLI_VERSION }}
           inlineScript: |
             rg="${{ github.event.inputs.student_username }}"
-    
+
             echo "Deleting all VMs in $rg..."
             vms=$(az vm list -g "$rg"  --query "[].name" -o tsv)
             for vm in $vms; do
@@ -159,7 +159,7 @@ jobs:
               echo "Deleting NIC: $nic"
               az network nic delete -g "$rg" -n "$nic"
             done
-          
+
             echo "Deleting all Public IPs in $rg..."
             pips=$(az network public-ip list -g "$rg"  --query "[].name" -o tsv)
             for pip in $pips; do
@@ -168,7 +168,6 @@ jobs:
             done
 
             echo "✅ Azure cleanup completed for $rg"
-
 
       - name: Terraform Destroy
         id: destroy
