@@ -26,6 +26,6 @@ jobs:
                 echo "This is where the Slack/email alert will go."
                 curl -X POST -H 'Content-type: application/json' \
                 --data "{
-                    \"text\": \"❌ Github Action FAILED in repo: $GITHUB_REPOSITORY, \\nworkflow: $GITHUB_WORKFLOW, job: $GITHUB_JOB, run: $GITHUB_RUN_NUMBER\"
+                    \"text\": \"❌ Github Action FAILED\\nRepo: $GITHUB_REPOSITORY, \\nWorkflow: $GITHUB_WORKFLOW, \\nJob: $GITHUB_JOB, \\nRun: $GITHUB_RUN_NUMBER\"
                 }" \
                 ${{ secrets.ALERT_SLACK_WEBHOOK_URL }}
