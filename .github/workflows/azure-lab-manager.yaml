@@ -217,6 +217,6 @@ jobs:
           # This is where the Slack alert will go.
           curl -X POST -H 'Content-type: application/json' \
           --data "{
-              \"text\": \"❌ Azure Lab Manager\\n   - Action: ${{ github.event.inputs.action }}\\n   - User: ${{ github.event.inputs.student_username }}\\n   - Status: ${{ needs.terraform.outputs.status }}\\n   - Run: $GITHUB_RUN_NUMBER\"
+              \"text\": \"🚨 Azure Lab Manager 🚨\\n   - Action: ${{ github.event.inputs.action }}\\n   - User: ${{ github.event.inputs.student_username }}\\n   - Status: ${{ needs.terraform.outputs.status }}\\n   - Run: $GITHUB_RUN_NUMBER\"
           }" \
           ${{ secrets.ALERT_SLACK_WEBHOOK_URL }}
