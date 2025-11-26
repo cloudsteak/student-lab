@@ -50,7 +50,7 @@ resource "azurerm_storage_container" "this" {
 
 
 resource "azurerm_storage_blob" "this" {
-  for_each               = fileset(var.local_doc_directory_path, "*.*") # Match md files in the directory
+  for_each               = var.is_rag_files ? fileset(var.local_doc_directory_path, "*.*") : [] # Match md files in the directory
   name                   = each.value                                   # Blob name (same as the file name)
   storage_account_name   = var.rag_storage_account_name
   storage_container_name = azurerm_storage_container.this[0].name
