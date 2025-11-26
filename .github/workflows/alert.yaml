@@ -1,0 +1,26 @@
+name: GitHub Alert Workflow
+
+on:
+    workflow_dispatch:
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Build
+              run: |
+                echo "build..." && exit 1 # Error example
+
+    notify:
+        needs: [build]
+        if: failure() # <-- Runs only if the 'build' job fails
+        runs-on: ubuntu-latest
+        steps:
+            - name: Placeholder notification
+              run: |
+                echo "This is where the Slack/email alert will go."
+                curl -X POST -H 'Content-type: application/json' \
+                --data "{
+                    \"text\": \"❌ Github Action FAILED in repo: $GITHUB_REPOSITORY, workflow: $GITHUB_WORKFLOW, job: $GITHUB_JOB, run: $GITHUB_RUN_NUMBER\"
+                }" \
+                ${{ secrets.ALERT_SLACK_WEBHOOK_URL }}
