@@ -1,7 +1,12 @@
 name: GitHub Alert Workflow
 
 on:
+    push:
+        branches:
+        - main
+        - alert
     workflow_dispatch:
+    
 
 jobs:
     build:
