@@ -1,6 +1,6 @@
 # Create Resource Group
 resource "azurerm_resource_group" "rg" {
-  name     = "${var.student_username}"
+  name     = var.student_username
   location = var.location
   tags     = local.tags
   timeouts {
@@ -28,10 +28,11 @@ module "STORAGE" {
 }
 
 module "AI" {
-  source              = "../../modules/ai"
-  subscription_id     = var.subscription_id
-  location            = var.location
-  resource_group_name = azurerm_resource_group.rg.name
+  source                   = "../../modules/ai"
+  subscription_id          = var.subscription_id
+  location                 = var.location
+  resource_group_name      = azurerm_resource_group.rg.name
   rag_storage_account_name = module.STORAGE.storage_account_name
-  tags                = local.tags
+  is_rag_files             = true
+  tags                     = local.tags
 }
