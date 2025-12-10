@@ -46,7 +46,7 @@ jobs:
 
       - name: Notify backend when lab is ${{ inputs.status }}
         run: |
-          curl -X POST https://lab-backend.cloudmentor.hu/lab-ready \
+          curl -X POST https://evolvia-backend.cloudmentor.hu/lab-ready \
             -H "Authorization: Bearer ${{ steps.auth.outputs.token }}" \
             -H "Content-Type: application/json" \
             -d "{\"username\": \"${{ inputs.student_username }}\", \"status\": \"${{ inputs.status }}\"}"
